@@ -8,14 +8,14 @@ pipeline {
     stages {
         stage('Checkout Code from GitHub') {
             steps {
-                git branch: 'main', url: 'https://github.com/TejPATHAK/DevOps-CI-CD-Pipeline-using-Jenkins-Docker-and-Kubernetes.git'
+                git branch: 'main', url: 'https://github.com/Shreeganesha-137/DevOps-CI-CD-Pipeline-using-Jenkins-Docker-and-Kubernetes.git'
             }
         }
 
         stage('Build Backend Image') {
             steps {
                 script {
-                    docker.build("tpathak21/devops-backend:latest", "./backend")
+                    docker.build("shreeganesha237/devops-backend:latest", "./backend")
                 }
             }
         }
@@ -23,7 +23,7 @@ pipeline {
         stage('Build Frontend Image') {
             steps {
                 script {
-                    docker.build("tpathak21/devops-frontend:latest", "./frontend")
+                    docker.build("shreeganesha237/devops-frontend:latest", "./frontend")
                 }
             }
         }
@@ -31,7 +31,7 @@ pipeline {
         stage('Login to DockerHub') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
+                    docker.withRegistry('https://hub.docker.com/repositories/shreeganesha237', 'dockerhub-creds') {
                         echo 'Logged in to DockerHub'
                     }
                 }
@@ -42,8 +42,8 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
-                        docker.image("tpathak21/devops-backend:latest").push()
-                        docker.image("tpathak21/devops-frontend:latest").push()
+                        docker.image("shreeganesha237/devops-backend:latest").push()
+                        docker.image("shreeganesha237/devops-frontend:latest").push()
                     }
                 }
             }
