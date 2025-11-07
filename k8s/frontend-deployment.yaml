@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: tpathak21/devops-frontend:latest
+          image: shreeganesha237/devops-backend:latest
           ports:
             - containerPort: 80
