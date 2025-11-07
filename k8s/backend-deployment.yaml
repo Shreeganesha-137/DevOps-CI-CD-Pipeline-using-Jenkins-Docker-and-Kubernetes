@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: backend
-          image: tpathak21/devops-backend:latest
+          image: shreeganesha237/devops-backend:latest
           ports:
             - containerPort: 5000
