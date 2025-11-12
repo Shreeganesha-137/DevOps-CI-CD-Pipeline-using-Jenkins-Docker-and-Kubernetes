@@ -199,21 +199,25 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                echo '🚀 Deploying application to Kubernetes...'
-                sh """
-                    export KUBECONFIG=${KUBECONFIG_PATH}
+                script {
+                    echo '🚀 Deploying application to Kubernetes...'
+                    sh """
+                        export KUBECONFIG=${KUBECONFIG_PATH}
 
-                    # Update deployments with new image versions
-                    kubectl set image deployment/backend-deployment backend=${DOCKERHUB_REPO}/devops-backend:${IMAGE_TAG} --record
-                    kubectl set image deployment/frontend-deployment frontend=${DOCKERHUB_REPO}/devops-frontend:${IMAGE_TAG} --record
+                        # Apply base manifests (first-time setup)
+                        kubectl apply -f k8s/backend-deployment.yaml || true
+                        kubectl apply -f k8s/frontend-deployment.yaml || true
+                        kubectl apply -f k8s/service.yaml || true
 
-                    # Apply services
-                    kubectl apply -f k8s/service.yaml
+                        # Update deployments with new images
+                        kubectl set image deployment/backend-deployment backend=${DOCKERHUB_REPO}/devops-backend:${IMAGE_TAG} --record
+                        kubectl set image deployment/frontend-deployment frontend=${DOCKERHUB_REPO}/devops-frontend:${IMAGE_TAG} --record
 
-                    # Verify rollout
-                    kubectl rollout status deployment/backend-deployment
-                    kubectl rollout status deployment/frontend-deployment
-                """
+                        # Verify rollout
+                        kubectl rollout status deployment/backend-deployment
+                        kubectl rollout status deployment/frontend-deployment
+                    """
+                }
             }
         }
     }
@@ -227,6 +231,7 @@ pipeline {
         }
     }
 }
+
 `
 ---
 ## ✅ Output Validation
