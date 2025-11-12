@@ -56,8 +56,8 @@ pipeline {
                         kubectl apply -f k8s/service.yaml
 
                         # Verify rollout
-                        kubectl rollout status deployment/backend-deployment
-                        kubectl rollout status deployment/frontend-deployment
+                        kubectl rollout status deployment/devops-backend
+                        kubectl rollout status deployment/devops-frontend
                     """
                 }
             }
