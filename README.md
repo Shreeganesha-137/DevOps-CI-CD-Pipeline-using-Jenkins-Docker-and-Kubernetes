@@ -199,25 +199,23 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                script {
-                    echo '🚀 Deploying application to Kubernetes...'
-                    sh """
-                        export KUBECONFIG=${KUBECONFIG_PATH}
+                echo '🚀 Deploying application to Kubernetes...'
+                sh """
+                    export KUBECONFIG=${KUBECONFIG_PATH}
 
-                        # Apply base manifests (first-time setup)
-                        kubectl apply -f k8s/backend-deployment.yaml || true
-                        kubectl apply -f k8s/frontend-deployment.yaml || true
-                        kubectl apply -f k8s/service.yaml || true
+                    # Apply manifests (skip validation to avoid cert issues)
+                    kubectl apply -f k8s/backend-deployment.yaml --validate=false
+                    kubectl apply -f k8s/frontend-deployment.yaml --validate=false
+                    kubectl apply -f k8s/service.yaml --validate=false
 
-                        # Update deployments with new images
-                        kubectl set image deployment/backend-deployment backend=${DOCKERHUB_REPO}/devops-backend:${IMAGE_TAG} --record
-                        kubectl set image deployment/frontend-deployment frontend=${DOCKERHUB_REPO}/devops-frontend:${IMAGE_TAG} --record
+                    # Update deployments with new images
+                    kubectl set image deployment/devops-backend backend=${DOCKERHUB_REPO}/devops-backend:${IMAGE_TAG} --record
+                    kubectl set image deployment/devops-frontend frontend=${DOCKERHUB_REPO}/devops-frontend:${IMAGE_TAG} --record
 
-                        # Verify rollout
-                        kubectl rollout status deployment/backend-deployment
-                        kubectl rollout status deployment/frontend-deployment
-                    """
-                }
+                    # Wait for rollout
+                    kubectl rollout status deployment/devops-backend
+                    kubectl rollout status deployment/devops-frontend
+                """
             }
         }
     }
@@ -231,6 +229,7 @@ pipeline {
         }
     }
 }
+
 
 `
 ---
